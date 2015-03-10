@@ -18,7 +18,7 @@ setwd('C:/Users/acer/Developer/RepData_PeerAssessment1')
 if(!file.exists("activity.csv")){
         unzip("activity.zip", exdir = ".")
 }
-activity <- read.csv("activity.csv", header = T, sep = ',', )
+activity <- read.csv("activity.csv", header = T, sep = ',' )
 # Convert date from factor into a date object.
 ```
 
