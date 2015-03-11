@@ -10,6 +10,7 @@ Sys.setlocale("LC_TIME","English")
 time <- format(Sys.time(), "%a %b %d %X %Y")
 tz   <- Sys.timezone()
 library(knitr)
+library(dplyr)
 setwd('C:/Users/acer/Developer/RepData_PeerAssessment1')
 ```
 
@@ -18,13 +19,18 @@ setwd('C:/Users/acer/Developer/RepData_PeerAssessment1')
 if(!file.exists("activity.csv")){
         unzip("activity.zip", exdir = ".")
 }
-activity <- read.csv("activity.csv", header = T, sep = ',' )
+activity <- read.csv("activity.csv", header = T, sep = ',')
 # Convert date from factor into a date object.
+activity$datePOSIX <- as.POSIXct(activity$date, format = "%Y-%m-%d", tz = "GMT")
 ```
 
 ## What is mean total number of steps taken per day?
 ```{r meantotal}
-
+by_day <- group_by(activity, datePOSIX)
+steps <- na.omit(summarise(by_day, Total = sum(steps)))
+hist(steps$Total)
+mean(steps$Total)
+median(steps$Total)
 ```
 
 
