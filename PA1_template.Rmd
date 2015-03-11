@@ -29,14 +29,25 @@ activity$datePOSIX <- as.POSIXct(activity$date, format = "%Y-%m-%d", tz = "GMT")
 by_day <- group_by(activity, datePOSIX)
 steps <- na.omit(summarise(by_day, Total = sum(steps)))
 hist(steps$Total)
-mean(steps$Total)
-median(steps$Total)
+mean(steps$Total, na.rm = TRUE)
+median(steps$Total, na.rm = TRUE)
 ```
 
 
 ## What is the average daily activity pattern?
 ```{r averagedaily}
 
+activity$datetimePOSIX <- as.POSIXct(paste(activity$date, 
+                                           sprintf("%04d", activity$interval)
+                                           ),
+                                     format="%Y-%m-%d %H%M", tz = "GMT")
+
+by_datetime <- group_by(activity, datetimePOSIX)
+steps_mean_dt <- na.omit(summarise(by_datetime, Average = mean(steps)))
+
+plot(steps_mean_dt, type = "l", main = "Average Daily Activity Pattern")
+
+steps_mean_dt[ which.max(steps_mean_dt$Average), ]
 ```
 
 
