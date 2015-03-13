@@ -52,10 +52,48 @@ steps_mean_dt[ which.max(steps_mean_dt$Average), ]
 
 
 ## Imputing missing values
+The total of missing values can be computed with:
+```{r total NA}
+totalNA <- dim(activity[ is.na(activity$steps), ])[1]
+```
+The value is **`r totalNA`**. The presence of missing may introduce
+bias into some calculations or summaries of data.  
+In order to fill these **`r totalNA`** NA values, the rounded average steps (mean)
+for that 5 minute interval were taken:
+```{r strategy for imputing}
+IMP <- aggregate(steps ~ interval, data = activity, mean)
+IMP$steps <- round(IMP$steps)
+```
+A data set that is equal to the original dataset but with the missing data filled in were prepared:
+```{r create new data set}
+names(IMP)[2] <- "activityMean"
+bind <- merge(activity, IMP)
+```
+Perform imputing.
 ```{r imputing}
-
+bind$steps[ is.na( bind$steps ) ] <- bind$activityMean[ is.na( bind$steps ) ]
+bind$activityMean <- NULL
 ```
 
+Data set **bind** is the data set **activity** but with the missing data filled in.
+```{r data sets}
+str(activity)
+str(bind)
+```
+
+Make a histogram of the total number of steps taken each day and 
+Calculate and report the mean and median total number of steps taken per day.
+
+```{r report}
+by_day_bind <- group_by(bind, datePOSIX)
+steps_bind <- summarise(by_day_bind, Total = sum(steps))
+hist(steps_bind$Total)
+mean(steps_bind$Total)
+median(steps_bind$Total)
+```
+
+Do these values differ from the estimates from the first part of the assignment?
+What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
 ## Are there differences in activity patterns between weekdays and weekends?
 ```{r differences}
