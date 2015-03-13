@@ -1,3 +1,6 @@
 *.csv
 *.RData
 *.Rhistory
+*.html
+PA1_template.md
+PA1_template/
