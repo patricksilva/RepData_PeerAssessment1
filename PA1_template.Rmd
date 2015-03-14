@@ -5,10 +5,15 @@ output:
     keep_md: true
 ---
 
-```{r loadlibraries}
+```{r computetime}
 Sys.setlocale("LC_TIME","English")
-time <- format(Sys.time(), "%a %b %d %X %Y")
+time <- format(Sys.time(), "%F %T %Z")
 tz   <- Sys.timezone()
+```
+
+The current time is **`r time`** in **`r tz`**.
+
+```{r loadlibraries}
 library(knitr)
 library(dplyr)
 setwd('C:/Users/acer/Developer/RepData_PeerAssessment1')
