@@ -59,7 +59,7 @@ steps_mean_dt[ which.max(steps_mean_dt$Average), ]
 ## Imputing missing values
 The total of missing values can be computed with:
 ```{r total NA}
-totalNA <- dim(activity[ is.na(activity$steps), ])[1]
+totalNA <- sum(is.na(activity$steps))
 ```
 The value is **`r totalNA`**. The presence of missing may introduce
 bias into some calculations or summaries of data.  
@@ -97,8 +97,16 @@ mean(steps_bind$Total)
 median(steps_bind$Total)
 ```
 
-Do these values differ from the estimates from the first part of the assignment?
-What is the impact of imputing missing data on the estimates of the total daily number of steps?
+These values differ from the estimates from the first part of the assignment by:
+```{r diff}
+mean(steps$Total) - mean(steps_bind$Total)
+median(steps$Total) - median(steps_bind$Total)
+
+paste0(round((1 - (mean(steps$Total) / mean(steps_bind$Total))) * 100, digits = 2),"%")
+paste0(round((1 - (median(steps$Total) / median(steps_bind$Total))) * 100, digits = 2),"%")
+```
+The impact of imputing missing data on the estimates of the total daily number
+of steps increases precision decreasing the estimates, as shown above.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 ```{r differences}
