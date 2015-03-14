@@ -20,6 +20,7 @@ library(dplyr)
 ```
 
 ## Loading and preprocessing the data
+
 ```{r loaddata}
 if(!file.exists("activity.csv")){
         unzip("activity.zip", exdir = ".")
@@ -30,6 +31,7 @@ activity$datePOSIX <- as.POSIXct(activity$date, format = "%Y-%m-%d", tz = "GMT")
 ```
 
 ## What is mean total number of steps taken per day?
+
 ```{r meantotal}
 by_day <- group_by(activity, datePOSIX)
 steps <- na.omit(summarise(by_day, Total = sum(steps)))
@@ -38,10 +40,9 @@ mean(steps$Total, na.rm = TRUE)
 median(steps$Total, na.rm = TRUE)
 ```
 
-
 ## What is the average daily activity pattern?
-```{r averagedaily}
 
+```{r averagedaily}
 activity$datetimePOSIX <- as.POSIXct(paste(activity$date, 
                                            sprintf("%04d", activity$interval)
                                            ),
@@ -55,32 +56,41 @@ plot(steps_mean_dt, type = "l", main = "Average Daily Activity Pattern")
 steps_mean_dt[ which.max(steps_mean_dt$Average), ]
 ```
 
-
 ## Imputing missing values
 The total of missing values can be computed with:
+
 ```{r total NA}
 totalNA <- sum(is.na(activity$steps))
 ```
+
 The value is **`r totalNA`**. The presence of missing may introduce
 bias into some calculations or summaries of data.  
 In order to fill these **`r totalNA`** NA values, the rounded average steps (mean)
 for that 5 minute interval were taken:
+
 ```{r strategy for imputing}
 IMP <- aggregate(steps ~ interval, data = activity, mean)
-IMP$steps <- round(IMP$steps)
+IMP$steps <- as.integer(round(IMP$steps))
 ```
+
 A data set that is equal to the original dataset but with the missing data filled in were prepared:
+
 ```{r create new data set}
 names(IMP)[2] <- "activityMean"
 bind <- merge(activity, IMP)
 ```
+
 Perform imputing.
+
 ```{r imputing}
 bind$steps[ is.na( bind$steps ) ] <- bind$activityMean[ is.na( bind$steps ) ]
 bind$activityMean <- NULL
+bind <- arrange(bind, datetimePOSIX)
+bind <- bind[, names(activity)]
 ```
 
 Data set **bind** is the data set **activity** but with the missing data filled in.
+
 ```{r data sets}
 str(activity)
 str(bind)
@@ -98,6 +108,7 @@ median(steps_bind$Total)
 ```
 
 These values differ from the estimates from the first part of the assignment by:
+
 ```{r diff}
 mean(steps$Total) - mean(steps_bind$Total)
 median(steps$Total) - median(steps_bind$Total)
@@ -105,15 +116,18 @@ median(steps$Total) - median(steps_bind$Total)
 paste0(round((1 - (mean(steps$Total) / mean(steps_bind$Total))) * 100, digits = 2),"%")
 paste0(round((1 - (median(steps$Total) / median(steps_bind$Total))) * 100, digits = 2),"%")
 ```
+
 The impact of imputing missing data on the estimates of the total daily number
 of steps increases precision decreasing the estimates, as shown above.
-
 ## Are there differences in activity patterns between weekdays and weekends?
 By creating a new factor variable in the dataset with filled-in missing values with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day will help.
+
 ```{r new factor weekday / weekend}
 bind$weekday <- as.factor(ifelse(weekdays(activity$datePOSIX) %in% c('Saturday', 'Sunday'), 'weekend', 'weekday'))
 ```
+
 And with a panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis) we see:
+
 ```{r differences}
 by_interval_bind <- group_by(bind, interval, weekday)
 steps_by_interval_bind <- summarise(by_interval_bind, Average = mean(steps))
