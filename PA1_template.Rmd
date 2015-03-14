@@ -16,6 +16,7 @@ The current time is **`r time`** in **`r tz`**.
 ```{r loadlibraries}
 library(knitr)
 library(dplyr)
+library(lattice)
 setwd('C:/Users/acer/Developer/RepData_PeerAssessment1')
 ```
 
@@ -117,5 +118,15 @@ bind$weekday <- as.factor(ifelse(weekdays(activity$datePOSIX) %in% c('Saturday',
 ```
 Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
 ```{r differences}
+by_interval_bind <- group_by(bind, interval, weekday)
+steps_by_interval_bind <- summarise(by_interval_bind, Average = mean(steps))
 
+xyplot( Average ~ interval | weekday, data = steps_by_interval_bind, type = "l", layout = c(1,2),
+        xlab = "Interval", ylab = "Number of steps", 
+        panel = function (x, y, ...) {
+                panel.xyplot(x, y, ...)
+                panel.abline(h = mean(y), lty = 2)
+                panel.abline(h = median(y), lty = 1)
+        }
+)
 ```
