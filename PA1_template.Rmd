@@ -14,10 +14,9 @@ tz   <- Sys.timezone()
 The current time is **`r time`** in **`r tz`**.
 
 ```{r loadlibraries}
+library(lattice)
 library(knitr)
 library(dplyr)
-library(lattice)
-setwd('C:/Users/acer/Developer/RepData_PeerAssessment1')
 ```
 
 ## Loading and preprocessing the data
@@ -110,13 +109,11 @@ The impact of imputing missing data on the estimates of the total daily number
 of steps increases precision decreasing the estimates, as shown above.
 
 ## Are there differences in activity patterns between weekdays and weekends?
-For this part the weekdays() function may be of some help here. Use the dataset with the filled-in missing values for this part.
-
-Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+By creating a new factor variable in the dataset with filled-in missing values with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day will help.
 ```{r new factor weekday / weekend}
 bind$weekday <- as.factor(ifelse(weekdays(activity$datePOSIX) %in% c('Saturday', 'Sunday'), 'weekend', 'weekday'))
 ```
-Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
+And with a panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis) we see:
 ```{r differences}
 by_interval_bind <- group_by(bind, interval, weekday)
 steps_by_interval_bind <- summarise(by_interval_bind, Average = mean(steps))
